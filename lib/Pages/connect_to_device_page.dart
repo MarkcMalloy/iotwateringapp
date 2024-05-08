@@ -58,18 +58,6 @@ class _ConnectToDevicePageState extends State<ConnectToDevicePage> {
     );
   }
 
-  Future<void> connectToDevice() async {
-    _isLoading = true;
-    int code = await _apiService.connectToArduino(_ipController.text);
-    print("code: $code");
-    if (code == 200) {
-      setState(() {
-        _isConnectedToDevice = true;
-        _isLoading = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -144,7 +132,6 @@ class _ConnectToDevicePageState extends State<ConnectToDevicePage> {
                     child: TextButton(
                       onPressed: () async {
                         // Possibly another action
-                        await connectToDevice();
                       },
                       child: const Text(
                         "Connect",
