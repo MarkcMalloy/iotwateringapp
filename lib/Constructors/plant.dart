@@ -1,6 +1,9 @@
 class Plant {
-  String plantImage;
+  String plantCardImage;
+  String plantDetailsImage;
   String plantName;
+  int plantPumpId;
 
-  Plant(this.plantImage, this.plantName);
+
+  Plant(this.plantCardImage, this.plantDetailsImage, this.plantName, this.plantPumpId);
 }

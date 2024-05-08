@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iotwateringapp/Constructors/plant.dart';
-import 'package:iotwateringapp/Pages/MyPlantDetails/citrus_tree_page.dart';
-import 'package:iotwateringapp/Pages/MyPlantDetails/olive_tree_page.dart';
+import 'package:iotwateringapp/Pages/MyPlantDetails/plant_details_page.dart';
 import 'package:iotwateringapp/Utils/colors.dart';
 
 class PlantCard extends StatelessWidget {
@@ -13,15 +12,15 @@ class PlantCard extends StatelessWidget {
     return InkWell(
       onTap: (){
         switch(plant.plantName){
-          case "Olives":
+          case "Citrus Tree":
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const OliveTreeDetailsPage(title: "My Olives",)),
+              MaterialPageRoute(builder: (context) => PlantDetailsPage(title: "My Citrus",plant: plant)),
             );
-          case "Citrus":
+          case "Thyme":
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const CitrusTreeDetailsPage(title: "My Citrus",)),
+              MaterialPageRoute(builder: (context) => PlantDetailsPage(title: "My Thyme", plant: plant,)),
             );
         }
       },
@@ -30,9 +29,12 @@ class PlantCard extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              child: Image.asset(
-                plant.plantImage,
-                fit: BoxFit.cover,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10.0), // Set the radius here
+                child: Image.asset(
+                  plant.plantCardImage,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             Padding(

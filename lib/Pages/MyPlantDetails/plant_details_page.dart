@@ -1,21 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:iotwateringapp/Constructors/plant.dart';
 import 'package:iotwateringapp/Pages/MyPlantDetails/Components/weather_info_pill.dart';
 import 'package:iotwateringapp/Utils/colors.dart';
+import 'package:iotwateringapp/services/api_service.dart';
 import 'package:weather_icons/weather_icons.dart';
 
-class CitrusTreeDetailsPage extends StatefulWidget {
-  const CitrusTreeDetailsPage({super.key, required this.title});
+class PlantDetailsPage extends StatefulWidget {
+  const PlantDetailsPage({super.key, required this.title, required this.plant});
+  final Plant plant;
   final String title;
 
   @override
-  State<CitrusTreeDetailsPage> createState() => _CitrusTreeDetailsPageState();
+  State<PlantDetailsPage> createState() => _PlantDetailsPageState();
 }
 
-class _CitrusTreeDetailsPageState extends State<CitrusTreeDetailsPage> {
-
+class _PlantDetailsPageState extends State<PlantDetailsPage> {
   @override
   Widget build(BuildContext context) {
+    BoxShadow bshadow = BoxShadow(
+      color: Colors.grey.withOpacity(0.5),
+      blurRadius: 4,
+      spreadRadius: 5,
+      offset: const Offset(0, -3),
+    );
+    BoxShadow bshadow2 = BoxShadow(
+      color: Colors.grey.withOpacity(0.3),
+      blurRadius: 4,
+      spreadRadius: 5,
+      offset: const Offset(0, 1),
+    );
+
     return Scaffold(
         backgroundColor: ThemeColors.oliveDune,
         appBar: AppBar(
@@ -23,7 +38,9 @@ class _CitrusTreeDetailsPageState extends State<CitrusTreeDetailsPage> {
           title: Text(
             widget.title,
             style: const TextStyle(
-                fontSize: 32, color: ThemeColors.oliveLeaf, fontWeight: FontWeight.bold),
+                fontSize: 32,
+                color: ThemeColors.oliveLeaf,
+                fontWeight: FontWeight.bold),
           ),
         ),
         body: Stack(
@@ -42,10 +59,11 @@ class _CitrusTreeDetailsPageState extends State<CitrusTreeDetailsPage> {
                 weatherInfoType: InfoType.humidity,
                 pillColor: ThemeColors.oliveDune,
                 secondaryColor: ThemeColors.citrusLeaf,
+                humidity: 55, //TODO: Get real humidity
               ),
             ),
             Positioned(
-                top: MediaQuery.of(context).size.height / 2,
+                top: MediaQuery.of(context).size.height / 2.6,
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
                   child: Column(
@@ -54,17 +72,10 @@ class _CitrusTreeDetailsPageState extends State<CitrusTreeDetailsPage> {
                         height: MediaQuery.of(context).size.height / 3,
                         width: MediaQuery.of(context).size.width - 32,
                         decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(16.0),
-                            topRight: Radius.circular(16.0),
+                          borderRadius: const BorderRadius.all(Radius.circular(16.0)
                           ),
                           boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
-                              blurRadius: 4,
-                              spreadRadius: 5,
-                              offset: const Offset(0, -3),
-                            ),
+                            bshadow
                           ],
                           color: Colors.white,
                         ),
@@ -72,25 +83,44 @@ class _CitrusTreeDetailsPageState extends State<CitrusTreeDetailsPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            olive_list_item(
-                                "Soil\nHumidity", "32", WeatherIcons.humidity),
-                            olive_list_item("Soil\nTemperature", "21",
-                                WeatherIcons.celsius),
-                            olive_list_item("Last\nwatered", "113h",
-                                WeatherIcons.raindrops),
-                            olive_list_item(
-                                "Water\nin", "19h", FontAwesomeIcons.water),
+                            listItemWidget(
+                                "Soil\nMoisture", "32", WeatherIcons.humidity),
+                            listItemWidget(
+                                "Air\nTemperature", "21", WeatherIcons.celsius),
+                            listItemWidget("Water in\napprox.", "4h",
+                                FontAwesomeIcons.water),
                           ],
                         ),
                       ),
                     ],
                   ),
-                ))
+                )),
+            Positioned(
+                top: MediaQuery.of(context).size.height / 1.35,
+                child: Container(
+                    height: 70,
+                    width: 240,
+                    decoration: BoxDecoration(
+                        boxShadow: [
+                          bshadow2
+                        ],
+                        borderRadius: BorderRadius.circular(32.0),
+                        color: Colors.greenAccent),
+                    child: TextButton(
+                      onPressed: () async {
+                        ApiService apiservice = ApiService();
+                        await apiservice.startWaterPump(widget.plant);
+                      },
+                      child: const Text(
+                        "Water now",
+                        style: TextStyle(fontSize: 22),
+                      ),
+                    ))),
           ],
         ));
   }
 
-  Widget olive_list_item(String txt1, String txt2, IconData iconData) {
+  Widget listItemWidget(String txt1, String txt2, IconData iconData) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -101,7 +131,9 @@ class _CitrusTreeDetailsPageState extends State<CitrusTreeDetailsPage> {
             child: Text(
               txt1,
               style: const TextStyle(
-                  fontSize: 18, color: ThemeColors.oliveLeaf, fontWeight: FontWeight.w600),
+                  fontSize: 18,
+                  color: ThemeColors.oliveLeaf,
+                  fontWeight: FontWeight.w600),
             ),
           ),
         ),
@@ -113,10 +145,13 @@ class _CitrusTreeDetailsPageState extends State<CitrusTreeDetailsPage> {
               Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(txt2,
-                    style: const TextStyle(fontSize: 28, color: ThemeColors.oliveLeaf)),
+                    style: const TextStyle(
+                        fontSize: 28, color: ThemeColors.oliveLeaf)),
               ),
               Padding(
-                padding: iconData == FontAwesomeIcons.water ? const EdgeInsets.only(bottom: 0) : const EdgeInsets.only(bottom: 12),
+                padding: iconData == FontAwesomeIcons.water
+                    ? const EdgeInsets.only(bottom: 0)
+                    : const EdgeInsets.only(bottom: 12),
                 child: Icon(
                   iconData,
                   color: ThemeColors.oliveLeaf,
